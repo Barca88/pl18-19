@@ -4,3 +4,5 @@ proverbios: proverbios.fl
 
 clean:
 	rm proverbios
+	rm index.html
+	rm lex.yy.c
