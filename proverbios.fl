@@ -6,19 +6,29 @@
 
   FILE* out;
 
+  int c;
   char* title;
   char* quote;
 %}
 
-%x PROV TEXT AUTOR
-
+%x PROVS QUOT AUTOR
+nome "<title>"[^<]+
 %% 
 
-\<title>Provérbios[^<]+ { BEGIN
-                          fprintf(out,"<h1>%s</h1>\n",yytext+7);
-                          title = strdup(yytext+7);
-                        }
+{nome}    { 
+          title = strdup(yytext+7);
+        }
+"{{Autor"    { BEGIN AUTOR;
+           fprintf(out,"<h1>%s</h1>\n",title);
+}
+<AUTOR>\*\s*"&quot;".+/"&quot;"   { BEGIN QUOT;
+                                   // fprintf(out,"<p>%s</p>\n",yytext+7);
+                                   }
+<QUOT>\[\[.+\]\]   { fprintf(out,"<p>%s</p>\n",yytext+7);}
+<AUTOR>\<\/page\>                {BEGIN INITIAL;}
+<*>.|\n {;}
 
+         
 %%
 
 int main(int argc, char** argv){
