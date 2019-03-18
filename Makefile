@@ -6,9 +6,11 @@ clean:
 	rm proverbios
 	rm -f data/*.html
 	rm lex.yy.c
+	rm data/*.html
+	rm data/autores/*.html
 
 run: 
-	./proverbios ptwikiquote-20190301-pages-articles.xml index.html
+	./proverbios ptwikiquote-20190301-pages-articles.xml
 
 power:
-	make clean && make proverbios && make run
+	make clean; make proverbios; make run
