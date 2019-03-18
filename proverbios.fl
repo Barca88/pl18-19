@@ -1,4 +1,4 @@
-
+ 
 %option noyywrap
 %{
   #include <stdio.h>
@@ -30,15 +30,40 @@ nome "<title>"[^<]+
 
          
 %%
+void htmlInit(FILE *f){
+    fprintf(f, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/>\n\t</head>\n\t<body>\n");
+}
+
+void htmlClose(FILE *f){
+    fprintf(f, "\n\t</body>\n</html>");
+}
+void makeIndex(FILE* f){
+    htmlInit(f);
+    char* b = "\t\t";
+    fprintf(f,"%s<h1>Indíce</h1>\n",b);
+    fprintf(f,"%s<ul>\n",b);
+    char* items[4] = {"Citações por autor","Provérbios","Provérbios adulterados","Estatísticas"};
+    fprintf(f,"%s<li><a href='data/citações.html'>%s</a></li>\n",b,items[0]);
+    fprintf(f,"%s<li><a href='data/provérbios.html'>%s</a></li>\n",b,items[1]);
+    fprintf(f,"%s<li><a href='data/adulterados.html'>%s</a></li>\n",b,items[2]);
+    fprintf(f,"%s<li><a href='data/estatísticas.html'>%s</a></li>\n",b,items[3]);
+    fprintf(f,"%s</ul>",b);
+    htmlClose(f);
+}
 
 int main(int argc, char** argv){
-    
+    FILE* ind = fopen("index.html","w");
+    makeIndex(ind);
+/*
     if(argc > 1){
+      
     	yyin = fopen(argv[1], "r");
       out = fopen(argv[2],"w");
-    }
+    
+      yylex();
 
-    yylex();
-
+    } else { return 1;}
+*/
+    fclose(ind);
     return 0;
 }

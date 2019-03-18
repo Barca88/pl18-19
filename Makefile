@@ -4,8 +4,11 @@ proverbios: proverbios.fl
 
 clean:
 	rm proverbios
-	rm index.html
+	rm -f data/*.html
 	rm lex.yy.c
 
 run: 
 	./proverbios ptwikiquote-20190301-pages-articles.xml index.html
+
+power:
+	make clean && make proverbios && make run
