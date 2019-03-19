@@ -1,0 +1,89 @@
+
+%option noyywrap
+%{
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+
+  FILE* idx;
+
+  FILE* autores;
+  FILE* autor;
+
+  int c = 0, n = 0;
+  char filename[1024];
+  char* title;
+
+  void htmlInit(FILE *f);
+  void htmlClose(FILE *f);
+%}
+
+
+%x AUTOR 
+nome "<title>"[^<]+
+%% 
+                         
+{nome}  { 
+        title = strdup(yytext+7);
+        }
+"{{Autor"  { 
+           BEGIN AUTOR;
+           sprintf(filename, "data/autores/autor%d.html", n++);
+           fprintf(autores,"<a href=\"%s\">%s</a>\n<hr/>",filename+5,title);
+
+           autor = fopen(filename,"w");
+           htmlInit(autor);
+           fprintf(autor, "<h1>%s</h1>\n",title);
+           }
+
+<AUTOR>\*\s*"&quot;".+/"&quot;"   { ;
+                                  fprintf(autor, "<li>%s</li>\n",yytext+7);
+                                  }
+<AUTOR>\<\/page\>  {
+                    fprintf(autor, "\n\t</body>\n</html>");
+                    fclose(autor);
+                    BEGIN INITIAL;
+                    }
+
+<*>.|\n {;}
+
+         
+%%
+
+void htmlInit(FILE *f){
+    fprintf(f, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/></head>\n\t<body>\n");
+}
+void htmlClose(FILE *f){
+    fprintf(f, "\n\t</body>\n</html>");
+}
+void menuIndex(FILE *f){
+      fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/autores.html","Autores");
+      fprintf(idx,"<a href=\"%s\">%s</a>\n","data/proverbios.html","Provérbios");
+}
+
+int main(int argc, char** argv){
+    if(argc > 1){
+    	yyin = fopen(argv[1], "r");
+
+      //abrir index.html
+      idx = fopen(argv[2],"w");
+      htmlInit(idx);
+      menuIndex(idx);
+
+      //abrir autor.html
+      autores = fopen("data/autores.html","w");
+      htmlInit(autores);
+
+      yylex();
+
+      //fechar index
+      htmlClose(idx);
+      fclose(idx);
+
+      //fechar autores
+      htmlClose(autores);
+      fclose(autores);
+    }
+
+    return 0;
+}
