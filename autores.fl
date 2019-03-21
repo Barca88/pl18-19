@@ -16,6 +16,7 @@
 
   void htmlInit(FILE *f);
   void htmlClose(FILE *f);
+  void removeChar(char *str, char garbage);
 %}
 
 
@@ -36,7 +37,9 @@ nome "<title>"[^<]+
            fprintf(autor, "<h1>%s</h1>\n",title);
            }
 
-<AUTOR>\*\s*"&quot;".+/"&quot;"   { ;
+<AUTOR>\*\s*"&quot;".+/"&quot;"   { 
+                                  removeChar(yytext+7,'[');
+                                  removeChar(yytext+7,']');
                                   fprintf(autor, "<li>%s</li>\n",yytext+7);
                                   }
 <AUTOR>\<\/page\>  {
@@ -59,6 +62,16 @@ void htmlClose(FILE *f){
 void menuIndex(FILE *f){
       fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/autores.html","Autores");
       fprintf(idx,"<a href=\"%s\">%s</a>\n","data/proverbios.html","Provérbios");
+}
+
+void removeChar(char *str, char garbage) {
+
+    char *src, *dst;
+    for (src = dst = str; *src != '\0'; src++) {
+        *dst = *src;
+        if (*dst != garbage) dst++;
+    }
+    *dst = '\0';
 }
 
 int main(int argc, char** argv){

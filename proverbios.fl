@@ -33,18 +33,17 @@ prov "<title>Provérbios"[^<]+
         fprintf(proverbio,"<h1>%s</h1>",title);
        }
 
-<PROV>\*" &quot;"[^&]+          {fprintf(proverbio, "<hr/><li><b>%s</b></li>\n",yytext+8);}
-
-<PROV>\***" &quot;"[^&]+        {fprintf(proverbio, "<li>%s</li>\n",yytext+10);}  
-
-<PROV>"\*\* \'\''Adulteração:\'\''" {fprintf(proverbio, "<a>%s</a>\n","Adulterações:");}
-
 <PROV>"\* \''"[^\'']+           {fprintf(proverbio, "<li>%s</li>\n",yytext+4);}  
+
+<PROV>\*" &quot;"[^&]+          {BEGIN ADU;fprintf(proverbio, "<hr/><li><b>%s</b></li>\n",yytext+8);}
+
+<ADU>\***" &quot;"[^&]+        {fprintf(proverbio, "<li><li>%s</li></li>\n",yytext+10);
+                                BEGIN ADU;}
+<ADU>{BEGIN PROV;}
 
 <PROV>\<\/page\>  {fclose(proverbio); BEGIN INITIAL;}
 
 <*>.|\n {;}
-
          
 %%
 
