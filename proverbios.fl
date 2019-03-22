@@ -8,6 +8,7 @@
   FILE* idx;
 
   FILE* proverbios;
+  FILE* listproverbios;
   FILE* proverbio;
 
   int p = 0, n = 0;
@@ -16,6 +17,7 @@
 
   void htmlInit(FILE *f);
   void htmlClose(FILE *f);
+  void removeChar(char *str, char garbage);
 %}
 
 
@@ -26,6 +28,8 @@ prov "<title>Provérbios"[^<]+
 {prov} {
         BEGIN PROV;
         title = strdup(yytext+7);
+        removeChar(yytext+7,'[');
+        removeChar(yytext+7,']');
         sprintf(filename, "data/proverbios/proverbios%d.html", p++);
         fprintf(proverbios,"<a href=\"%s\">%s</a>\n<hr/>",filename+5,title);
         proverbio = fopen(filename,"w");
@@ -33,13 +37,23 @@ prov "<title>Provérbios"[^<]+
         fprintf(proverbio,"<h1>%s</h1>",title);
        }
 
-<PROV>"\* \''"[^\'']+           {fprintf(proverbio, "<li>%s</li>\n",yytext+4);}  
+<PROV>"\*\s?\''"[^\'']+           {
+                                 removeChar(yytext+4,'[');
+                                 removeChar(yytext+4,']');
+                                 fprintf(proverbio, "<li>%s</li>\n",yytext+4);
+                                 fprintf(listproverbios, "<hr/><li>%s\n %s</li>\n",yytext+4, title);
+                                 fprintf(listproverbios, "<li>de: %s</li>\n", title);
+                                }  
 
-<PROV>\*" &quot;"[^&]+          {BEGIN ADU;fprintf(proverbio, "<hr/><li><b>%s</b></li>\n",yytext+8);}
-
-<ADU>\***" &quot;"[^&]+        {fprintf(proverbio, "<li><li>%s</li></li>\n",yytext+10);
-                                BEGIN ADU;}
-<ADU>{BEGIN PROV;}
+<PROV>\**" &quot;"[^&]+         {
+                                    if(yytext[2]=='*'){
+                                        fprintf(proverbio, "<hr/><li>%s</li>\n", yytext+10);
+                                    }else{
+                                        fprintf(proverbio, "<hr/><li><b>%s</b></li>\n",yytext+8);
+                                        fprintf(listproverbios, "<hr/><li>%s</li>\n",yytext+8);
+                                        fprintf(listproverbios, "<a>de: %s</a>\n", title);
+                                    }
+                                 }
 
 <PROV>\<\/page\>  {fclose(proverbio); BEGIN INITIAL;}
 
@@ -55,7 +69,19 @@ void htmlClose(FILE *f){
 }
 void menuIndex(FILE *f){
       fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/autores.html","Autores");
-      fprintf(idx,"<a href=\"%s\">%s</a>\n","data/proverbios.html","Provérbios");
+      fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/proverbios.html","Provérbios");
+      fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/listproverbios.html","Lista de Provérbios");
+      fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/listautores.html","Lista de Citações");
+}
+
+void removeChar(char *str, char garbage) {
+
+    char *src, *dst;
+    for (src = dst = str; *src != '\0'; src++) {
+        *dst = *src;
+        if (*dst != garbage) dst++;
+    }
+    *dst = '\0';
 }
 
 int main(int argc, char** argv){
@@ -71,6 +97,11 @@ int main(int argc, char** argv){
       proverbios = fopen("data/proverbios.html","w");
       htmlInit(proverbios);
 
+      //abrir listproverbios.html
+      listproverbios = fopen("data/listproverbios.html","w");
+      htmlInit(listproverbios);
+      fprintf(listproverbios,"<h1>%s</h1>","Lista de Provérbios");
+
       yylex();
 
       //fechar index
@@ -80,6 +111,10 @@ int main(int argc, char** argv){
       //fechar proverbios
       htmlClose(proverbios);
       fclose(proverbios);
+
+      //fechar listproverbios
+      htmlClose(listproverbios);
+      fclose(listproverbios);
     }
 
     return 0;

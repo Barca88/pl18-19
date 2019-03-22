@@ -8,6 +8,7 @@
   FILE* idx;
 
   FILE* autores;
+  FILE* listautores;
   FILE* autor;
 
   int c = 0, n = 0;
@@ -37,11 +38,18 @@ nome "<title>"[^<]+
            fprintf(autor, "<h1>%s</h1>\n",title);
            }
 
-<AUTOR>\*\s*"&quot;".+/"&quot;"   { 
-                                  removeChar(yytext+7,'[');
-                                  removeChar(yytext+7,']');
-                                  fprintf(autor, "<li>%s</li>\n",yytext+7);
+
+<AUTOR>\*\ *(&|“)(quot;)?.* { 
+                                  removeChar(yytext,'[');
+                                  removeChar(yytext,']');
+                                  if(yytext[1]=='*')
+                                    fprintf(autor, "<li>%s</li>\n",yytext+2);
+                                  else
+                                    fprintf(autor, "<li>%s</li>\n",yytext+1);
+                                  fprintf(listautores, "<hr/><li>%s</li>\n",yytext+7);
+                                  fprintf(listautores, "<a>de: %s</a>\n", title);
                                   }
+
 <AUTOR>\<\/page\>  {
                     fprintf(autor, "\n\t</body>\n</html>");
                     fclose(autor);
@@ -87,6 +95,11 @@ int main(int argc, char** argv){
       autores = fopen("data/autores.html","w");
       htmlInit(autores);
 
+      //abrir listautor.html
+      listautores = fopen("data/listautores.html","w");
+      htmlInit(listautores);
+      fprintf(listautores,"<h1>%s</h1>","Lista de Citações");
+
       yylex();
 
       //fechar index
@@ -96,6 +109,10 @@ int main(int argc, char** argv){
       //fechar autores
       htmlClose(autores);
       fclose(autores);
+
+      //fechar listautores
+      htmlClose(listautores);
+      fclose(listautores);
     }
 
     return 0;
