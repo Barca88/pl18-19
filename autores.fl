@@ -39,16 +39,18 @@ nome "<title>"[^<]+
            }
 
 
-<AUTOR>\*\ *(&|“)(quot;)?.* { 
+<AUTOR>\*\ *(&|“)(quot;)?[^&”]+ { 
                                   removeChar(yytext,'[');
                                   removeChar(yytext,']');
-                                  if(yytext[1]=='*')
-                                    fprintf(autor, "<li>%s</li>\n",yytext+2);
-                                  else
-                                    fprintf(autor, "<li>%s</li>\n",yytext+1);
-                                  fprintf(listautores, "<hr/><li>%s</li>\n",yytext+7);
-                                  fprintf(listautores, "<a>de: %s</a>\n", title);
+                                  if(yytext[1]==' '){
+                                    fprintf(autor, "<li>%s\"</li>\n",yytext+2);
+                                    fprintf(listautores, "<hr/><li>%s\"</li>\n",yytext+2);
+                                  }else{
+                                    fprintf(autor, "<li>%s\"</li>\n",yytext+1);
+                                    fprintf(listautores, "<hr/><li>%s\"</li>\n",yytext+1);
                                   }
+                                  fprintf(listautores, "<a>de: %s</a>\n", title);
+                                }     
 
 <AUTOR>\<\/page\>  {
                     fprintf(autor, "\n\t</body>\n</html>");
