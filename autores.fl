@@ -5,8 +5,6 @@
   #include <stdlib.h>
   #include <string.h>
 
-  FILE* idx;
-
   FILE* autores;
   FILE* listautores;
   FILE* autor;
@@ -69,10 +67,6 @@ void htmlInit(FILE *f){
 void htmlClose(FILE *f){
     fprintf(f, "\n\t</body>\n</html>");
 }
-void menuIndex(FILE *f){
-      fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/autores.html","Autores");
-      fprintf(idx,"<a href=\"%s\">%s</a>\n","data/proverbios.html","Provérbios");
-}
 
 void removeChar(char *str, char garbage) {
 
@@ -88,11 +82,6 @@ int main(int argc, char** argv){
     if(argc > 1){
     	yyin = fopen(argv[1], "r");
 
-      //abrir index.html
-      idx = fopen(argv[2],"w");
-      htmlInit(idx);
-      menuIndex(idx);
-
       //abrir autor.html
       autores = fopen("data/autores.html","w");
       htmlInit(autores);
@@ -103,10 +92,6 @@ int main(int argc, char** argv){
       fprintf(listautores,"<h1>%s</h1>","Lista de Citações");
 
       yylex();
-
-      //fechar index
-      htmlClose(idx);
-      fclose(idx);
 
       //fechar autores
       htmlClose(autores);

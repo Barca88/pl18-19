@@ -21,39 +21,43 @@
 %}
 
 
-%x PROV ADU
-prov "<title>Provérbios"[^<]+
+%x PROV
+
 %% 
                          
-{prov} {
-        BEGIN PROV;
-        title = strdup(yytext+7);
-        removeChar(yytext+7,'[');
-        removeChar(yytext+7,']');
-        sprintf(filename, "data/proverbios/proverbios%d.html", p++);
-        fprintf(proverbios,"<a href=\"%s\">%s</a>\n<hr/>",filename+5,title);
-        proverbio = fopen(filename,"w");
-        htmlInit(proverbio);
-        fprintf(proverbio,"<h1>%s</h1>",title);
-       }
+"<title>Provérbios"[^<]+ {
+                            BEGIN PROV;
+                            title = strdup(yytext+7);
+                            sprintf(filename, "data/proverbios/proverbios%d.html", p++);
+                            fprintf(proverbios,"<a href=\"%s\">%s</a>\n<hr/>",filename+5,title);
+                            proverbio = fopen(filename,"w");
+                            htmlInit(proverbio);
+                            fprintf(proverbio,"<h1>%s</h1>",title);
+                         }
 
-<PROV>"\*\s?\''"[^\'']+           {
-                                 removeChar(yytext+4,'[');
-                                 removeChar(yytext+4,']');
-                                 fprintf(proverbio, "<li>%s</li>\n",yytext+4);
-                                 fprintf(listproverbios, "<hr/><li>%s\n %s</li>\n",yytext+4, title);
-                                 fprintf(listproverbios, "<li>de: %s</li>\n", title);
-                                }  
-
-<PROV>\**" &quot;"[^&]+         {
-                                    if(yytext[2]=='*'){
-                                        fprintf(proverbio, "<hr/><li>%s</li>\n", yytext+10);
+<PROV>\*\*?\ ?"&quot;"[^&]+         {
+                                    removeChar(yytext,'[');
+                                    removeChar(yytext,']');
+                                    if(yytext[1]=='*'){
+                                        fprintf(proverbio, "<li><b>%s\"</b></li>\n", yytext+3);
+                                    }else if(yytext[1]!=' '){
+                                        fprintf(proverbio, "<li>%s\"</li>\n",yytext+1);
+                                        fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+1);
+                                        fprintf(listproverbios, "<a>de: %s</a>\n", title);
                                     }else{
-                                        fprintf(proverbio, "<hr/><li><b>%s</b></li>\n",yytext+8);
-                                        fprintf(listproverbios, "<hr/><li>%s</li>\n",yytext+8);
+                                        fprintf(proverbio, "<li>%s\"</li>\n",yytext+2);
+                                        fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+2);
                                         fprintf(listproverbios, "<a>de: %s</a>\n", title);
                                     }
                                  }
+
+<PROV>\*\ \''[^\'']+           {
+                                 removeChar(yytext,'[');
+                                 removeChar(yytext,']');
+                                 fprintf(proverbio, "<li>%s</li>\n",yytext+4);
+                                 fprintf(listproverbios, "<hr/><li>%s\n %s</li>\n",yytext+4, title);
+                                 fprintf(listproverbios, "<li>de: %s</li>\n", title);
+                                } 
 
 <PROV>\<\/page\>  {fclose(proverbio); BEGIN INITIAL;}
 
@@ -70,8 +74,8 @@ void htmlClose(FILE *f){
 void menuIndex(FILE *f){
       fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/autores.html","Autores");
       fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/proverbios.html","Provérbios");
-      fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/listproverbios.html","Lista de Provérbios");
       fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/listautores.html","Lista de Citações");
+      fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/listproverbios.html","Lista de Provérbios");
 }
 
 void removeChar(char *str, char garbage) {
