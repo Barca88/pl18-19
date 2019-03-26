@@ -13,6 +13,7 @@ clean:
 	rm data/*.html
 	rm data/autores/*.html
 	rm data/proverbios/*.html
+	rm data/estatisticas/*.html
 
 run: 
 	./program ptwikiquote-20190301-pages-articles.xml index.html 

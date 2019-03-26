@@ -8,10 +8,12 @@
   FILE* idx;
 
   FILE* proverbios;
+  FILE* estatisticas;
+  FILE* estatsProvs;
   FILE* listproverbios;
   FILE* proverbio;
 
-  int p = 0, n = 0;
+  int p = 0, n = 0, np,npa;
   char filename[1024];
   char* title;
 
@@ -30,21 +32,47 @@
                             title = strdup(yytext+7);
                             sprintf(filename, "data/proverbios/proverbios%d.html", p++);
                             fprintf(proverbios,"<a href=\"%s\">%s</a>\n<hr/>",filename+5,title);
+                            fprintf(estatsProvs,"<h1>%s</h1>",title);
+                            npa = 0;
+                            np = 0;
                             proverbio = fopen(filename,"w");
                             htmlInit(proverbio);
                             fprintf(proverbio,"<h1>%s</h1>",title);
                          }
 
+<PROV>\*\*\ Tradu\ç\ão\:\ "&quot;"[^&]+ {
+    removeChar(yytext,'[');
+    removeChar(yytext,']');
+    np++;
+    fprintf(proverbio, "<li>%s\"</li>\n",yytext+15);
+    fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+15);
+    fprintf(listproverbios, "<a>de: %s</a>\n", title);
+
+}
+
+<PROV>\:\ Tradu\ç\ão\:[^.]+ {
+                    removeChar(yytext,'[');
+                    removeChar(yytext,']');
+                    np++;
+                    fprintf(proverbio, "<li>%s\"</li>\n",yytext+2);
+                    fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+2);
+                    fprintf(listproverbios, "<a>de: %s</a>\n", title);
+
+}
+
 <PROV>\*\*?\ ?"&quot;"[^&]+         {
                                     removeChar(yytext,'[');
                                     removeChar(yytext,']');
                                     if(yytext[1]=='*'){
+                                        npa++;
                                         fprintf(proverbio, "<li><b>%s\"</b></li>\n", yytext+3);
                                     }else if(yytext[1]!=' '){
+                                        np++;
                                         fprintf(proverbio, "<li>%s\"</li>\n",yytext+1);
                                         fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+1);
                                         fprintf(listproverbios, "<a>de: %s</a>\n", title);
                                     }else{
+                                        np++;
                                         fprintf(proverbio, "<li>%s\"</li>\n",yytext+2);
                                         fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+2);
                                         fprintf(listproverbios, "<a>de: %s</a>\n", title);
@@ -54,12 +82,17 @@
 <PROV>\*\ \''[^\'']+           {
                                  removeChar(yytext,'[');
                                  removeChar(yytext,']');
+                                 np++;
                                  fprintf(proverbio, "<li>%s</li>\n",yytext+4);
                                  fprintf(listproverbios, "<hr/><li>%s\n %s</li>\n",yytext+4, title);
                                  fprintf(listproverbios, "<li>de: %s</li>\n", title);
                                 } 
 
-<PROV>\<\/page\>  {fclose(proverbio); BEGIN INITIAL;}
+<PROV>\<\/page\>  {
+                    fprintf(estatsProvs,"<li>Numero de %s: %d\n</li>",title,np);
+                    fprintf(estatsProvs,"<li>Numero de %s adulterados: %d\n</li>",title,npa);
+                    fclose(proverbio); BEGIN INITIAL;
+                  }
 
 <*>.|\n {;}
          
@@ -76,6 +109,7 @@ void menuIndex(FILE *f){
       fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/proverbios.html","Provérbios");
       fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/listautores.html","Lista de Citações");
       fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/listproverbios.html","Lista de Provérbios");
+      fprintf(idx,"<a href=\"%s\">%s</a>\n<hr/>","data/estatisticas.html","Estatisticas");
 }
 
 void removeChar(char *str, char garbage) {
@@ -101,6 +135,16 @@ int main(int argc, char** argv){
       proverbios = fopen("data/proverbios.html","w");
       htmlInit(proverbios);
 
+      //abrir estatisticas.html
+      estatisticas = fopen("data/estatisticas.html","w");
+      htmlInit(estatisticas);
+      fprintf(estatisticas,"<a href=\"%s\">%s</a>\n<hr/>","estatisticas/estatisticasproverbios.html","Estatisticas provérbios");
+      fprintf(estatisticas,"<a href=\"%s\">%s</a>\n<hr/>","estatisticas/estatisticasautores.html","Estatisticas autores");
+
+      //abrir estatisticasproverbios.html
+      estatsProvs = fopen("data/estatisticas/estatisticasproverbios.html","w");
+      htmlInit(estatsProvs);
+
       //abrir listproverbios.html
       listproverbios = fopen("data/listproverbios.html","w");
       htmlInit(listproverbios);
@@ -115,6 +159,10 @@ int main(int argc, char** argv){
       //fechar proverbios
       htmlClose(proverbios);
       fclose(proverbios);
+
+      //fechar estatisticas
+      htmlClose(estatisticas);
+      fclose(estatisticas);
 
       //fechar listproverbios
       htmlClose(listproverbios);

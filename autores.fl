@@ -7,9 +7,10 @@
 
   FILE* autores;
   FILE* listautores;
+  FILE* estatsAutores;
   FILE* autor;
 
-  int c = 0, n = 0;
+  int c = 0, nq = 0;
   char filename[1024];
   char* title;
 
@@ -28,9 +29,11 @@ nome "<title>"[^<]+
         }
 "{{Autor"  { 
            BEGIN AUTOR;
-           sprintf(filename, "data/autores/autor%d.html", n++);
+           sprintf(filename, "data/autores/autor%d.html", nq++);
            fprintf(autores,"<a href=\"%s\">%s</a>\n<hr/>",filename+5,title);
+           fprintf(estatsAutores,"<h1>%s</h1>",title);
 
+           nq = 0;
            autor = fopen(filename,"w");
            htmlInit(autor);
            fprintf(autor, "<h1>%s</h1>\n",title);
@@ -40,6 +43,7 @@ nome "<title>"[^<]+
 <AUTOR>\*\ *(&|“)(quot;)?[^&”]+ { 
                                   removeChar(yytext,'[');
                                   removeChar(yytext,']');
+                                  nq++;
                                   if(yytext[1]==' '){
                                     fprintf(autor, "<li>%s\"</li>\n",yytext+2);
                                     fprintf(listautores, "<hr/><li>%s\"</li>\n",yytext+2);
@@ -51,6 +55,7 @@ nome "<title>"[^<]+
                                 }     
 
 <AUTOR>\<\/page\>  {
+                    fprintf(estatsAutores,"<li>Numero de quotes de %s : %d\n</li>",title,nq);
                     fprintf(autor, "\n\t</body>\n</html>");
                     fclose(autor);
                     BEGIN INITIAL;
@@ -85,6 +90,10 @@ int main(int argc, char** argv){
       //abrir autor.html
       autores = fopen("data/autores.html","w");
       htmlInit(autores);
+
+      //abrir estatisticasautores.html
+      estatsAutores = fopen("data/estatisticas/estatisticasautores.html","w");
+      htmlInit(estatsAutores);
 
       //abrir listautor.html
       listautores = fopen("data/listautores.html","w");
