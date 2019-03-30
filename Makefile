@@ -11,9 +11,9 @@ clean:
 	rm index.html
 	rm lex.yy.c
 	rm data/*.html
+	rm data/estatisticas/*.html
 	rm data/autores/*.html
 	rm data/proverbios/*.html
-	rm data/estatisticas/*.html
 
 run: 
 	./program ptwikiquote-20190301-pages-articles.xml index.html 
