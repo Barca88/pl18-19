@@ -24,42 +24,42 @@
 nome "<title>"[^<]+
 %% 
                          
-{nome}  { 
-        title = strdup(yytext+7);
-        }
-"{{Autor"  { 
-           BEGIN AUTOR;
-           sprintf(filename, "data/autores/autor%d.html", nq++);
-           fprintf(autores,"<a href=\"%s\">%s</a>\n<hr/>",filename+5,title);
-           fprintf(estatsAutores,"<h1>%s</h1>",title);
+{nome} { 
+    title = strdup(yytext+7);
+}
 
-           nq = 0;
-           autor = fopen(filename,"w");
-           htmlInit(autor);
-           fprintf(autor, "<h1>%s</h1>\n",title);
-           }
+"{{Autor" { 
+    BEGIN AUTOR;
+    sprintf(filename, "data/autores/autor%d.html", nq++);
+    fprintf(autores,"<a href=\"%s\">%s</a>\n<hr/>",filename+5,title);
+    fprintf(estatsAutores,"<h1>%s</h1>",title);
+    nq = 0;
+    autor = fopen(filename,"w");
+    htmlInit(autor);
+    fprintf(autor, "<h1>%s</h1>\n",title);
+}
 
 
 <AUTOR>\*\ *(&|“)(quot;)?[^&”]+ { 
-                                  removeChar(yytext,'[');
-                                  removeChar(yytext,']');
-                                  nq++;
-                                  if(yytext[1]==' '){
-                                    fprintf(autor, "<li>%s\"</li>\n",yytext+2);
-                                    fprintf(listautores, "<hr/><li>%s\"</li>\n",yytext+2);
-                                  }else{
-                                    fprintf(autor, "<li>%s\"</li>\n",yytext+1);
-                                    fprintf(listautores, "<hr/><li>%s\"</li>\n",yytext+1);
-                                  }
-                                  fprintf(listautores, "<a>de: %s</a>\n", title);
-                                }     
+    removeChar(yytext,'[');
+    removeChar(yytext,']');
+    nq++;
+    if(yytext[1]==' '){
+      fprintf(autor, "<li>%s\"</li>\n",yytext+2);
+      fprintf(listautores, "<hr/><li>%s\"</li>\n",yytext+2);
+    }else{
+      fprintf(autor, "<li>%s\"</li>\n",yytext+1);
+      fprintf(listautores, "<hr/><li>%s\"</li>\n",yytext+1);
+    }
+    fprintf(listautores, "<a>de: %s</a>\n", title);
+}     
 
 <AUTOR>\<\/page\>  {
-                    fprintf(estatsAutores,"<li>Numero de quotes de %s : %d\n</li>",title,nq);
-                    fprintf(autor, "\n\t</body>\n</html>");
-                    fclose(autor);
-                    BEGIN INITIAL;
-                    }
+    fprintf(estatsAutores,"<li>Numero de quotes de %s : %d\n</li>",title,nq);
+    fprintf(autor, "\n\t</body>\n</html>");
+    fclose(autor);
+    BEGIN INITIAL;
+}
 
 <*>.|\n {;}
 
@@ -69,6 +69,7 @@ nome "<title>"[^<]+
 void htmlInit(FILE *f){
     fprintf(f, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/></head>\n\t<body>\n");
 }
+
 void htmlClose(FILE *f){
     fprintf(f, "\n\t</body>\n</html>");
 }
