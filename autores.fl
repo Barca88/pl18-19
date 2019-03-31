@@ -30,13 +30,14 @@ nome "<title>"[^<]+
 
 "{{Autor" { 
     BEGIN AUTOR;
-    sprintf(filename, "data/autores/autor%d.html", nq++);
+    sprintf(filename, "data/autores/autor%d.html", c++);
     fprintf(autores,"<a href=\"%s\">%s</a>\n<hr/>",filename+5,title);
-    fprintf(estatsAutores,"<h1>%s</h1>",title);
-    nq = 0;
     autor = fopen(filename,"w");
     htmlInit(autor);
     fprintf(autor, "<h1>%s</h1>\n",title);
+
+    fprintf(estatsAutores,"<h1>%s</h1>",title);
+    nq = 0;
 }
 
 
@@ -56,7 +57,6 @@ nome "<title>"[^<]+
 
 <AUTOR>\<\/page\>  {
     fprintf(estatsAutores,"<li>Numero de quotes de %s : %d\n</li>",title,nq);
-    fprintf(autor, "\n\t</body>\n</html>");
     fclose(autor);
     BEGIN INITIAL;
 }
@@ -86,8 +86,7 @@ void removeChar(char *str, char garbage) {
 
 int main(int argc, char** argv){
     if(argc <= 1) return 0;
-
-    yyin = fopen(argv[1], "r");
+	yyin = fopen(argv[1], "r");
     
     //abrir autor.html
     autores = fopen("data/autores.html","w");
@@ -110,7 +109,7 @@ int main(int argc, char** argv){
     //fechar listautores
     htmlClose(listautores);
     fclose(listautores);
-    }
+
 
     return 0;
 }
