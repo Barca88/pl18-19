@@ -98,11 +98,12 @@ int main(int argc, char** argv){
     //abrir autor.html
     autores = fopen("data/autores.html","w");
     htmlInit(autores);
+    fprintf(autores,"<h1>%s</h1>\n","Autores");
 
     //abrir estatisticasautores.html
     estatsAutores = fopen("data/estatisticas/estatisticasautores.html","w");
     htmlInit(estatsAutores);
-    fprintf(estatsAutores,"<h1>%s</h1>\n","Estatísticas de Quotes");
+    fprintf(estatsAutores,"<h1>%s</h1>\n","Estatísticas de Autores");
 
     //abrir listautor.html
     listautores = fopen("data/listautores.html","w");

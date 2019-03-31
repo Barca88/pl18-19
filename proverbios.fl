@@ -139,6 +139,7 @@ int main(int argc, char** argv){
     //abrir proverbios.html
     proverbios = fopen("data/proverbios.html","w");
     htmlInit(proverbios);
+    fprintf(proverbios,"<h1>%s</h1>\n","Provérbios");
 
     //abrir estatisticas.html
     estatisticas = fopen("data/estatisticas.html","w");
