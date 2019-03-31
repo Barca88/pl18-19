@@ -68,7 +68,7 @@ nome "<title>"[^<]+
 %%
 
 void htmlInit(FILE *f){
-    fprintf(f, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/></head>\n\t<body>\n");
+    fprintf(f, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/></head>\n\t<body>\n\n<link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\">\n");
 }
 
 void htmlClose(FILE *f){
