@@ -50,13 +50,10 @@ nome "<title>"[^<]+
     if(yytext[1]==' '){
       fprintf(autor, "<li> %s %s\"</li>\n",arrow,yytext+2);
       htmlQuote(listautores,yytext+2,title);
-      //fprintf(listautores, "<li> %s %s\"</li>\n",arrow,yytext+2);
     }else{
       fprintf(autor, "<li> %s %s\"</li>\n",arrow,yytext+1);
       htmlQuote(listautores,yytext+1,title);
-      //fprintf(listautores, "<li> %s %s\"</li>\n",arrow,yytext+1);
     }
-    //fprintf(listautores, "<a>de: %s</a>\n", title);
 }     
 
 <AUTOR>\<\/page\>  {
