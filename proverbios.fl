@@ -13,7 +13,7 @@
   FILE* listproverbios;
   FILE* proverbio;
 
-  int p = 0, n = 0, np,npa;
+  int p = 0, n = 0, np,npa,tp = 0,tpa = 0;
   char filename[1024];
   char* title;
 
@@ -43,6 +43,7 @@
 <PROV>\*\*\ Tradu\ç\ão\:\ "&quot;"[^&]+ {
     removeChar(yytext,'[');
     removeChar(yytext,']');
+    tp++;
     np++;
     fprintf(proverbio, "<li>%s\"</li>\n",yytext+15);
     fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+15);
@@ -53,6 +54,7 @@
 <PROV>\:\ Tradu\ç\ão\:[^.]+ {
     removeChar(yytext,'[');
     removeChar(yytext,']');
+    tp++;
     np++;
     fprintf(proverbio, "<li>\"%s\"</li>\n",yytext+14);
     fprintf(listproverbios, "<hr/><li>\"%s\"</li>\n",yytext+14);
@@ -63,14 +65,17 @@
     removeChar(yytext,'[');
     removeChar(yytext,']');
     if(yytext[1]=='*'){
+        tpa++;
         npa++;
         fprintf(proverbio, "<li><b>%s\"</b></li>\n", yytext+3);
     }else if(yytext[1]!=' '){
+        tp++;
         np++;
         fprintf(proverbio, "<li>%s\"</li>\n",yytext+1);
         fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+1);
         fprintf(listproverbios, "<a>de: %s</a>\n", title);
     }else{
+        tp++;
         np++;
         fprintf(proverbio, "<li>%s\"</li>\n",yytext+2);
         fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+2);
@@ -163,7 +168,14 @@ int main(int argc, char** argv){
     //fechar estatisticas
     htmlClose(estatisticas);
     fclose(estatisticas);
-      
+
+    //fechar estatisticasproverbios
+    fprintf(estatsProvs,"<hr/><li><b>Numero de nacionalidades:</b> %d </li>",p);
+    fprintf(estatsProvs,"<li><b>Numero total de proverbios:</b> %d </li>",tp);
+    fprintf(estatsProvs,"<li><b>Numero total de proverbios adulterados:</b> %d </li>",tpa);
+    htmlClose(estatsProvs);
+    fclose(estatsProvs); 
+
     //fechar listproverbios
     htmlClose(listproverbios);
     fclose(listproverbios);

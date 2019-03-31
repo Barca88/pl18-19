@@ -10,7 +10,7 @@ FILE* listautores;
 FILE* estatsAutores;
 FILE* autor;
 
-int c = 0, nq = 0;
+int c = 0, ct = 0, nq = 0;
 char filename[1024];
 char* title;
 
@@ -44,6 +44,7 @@ nome "<title>"[^<]+
 <AUTOR>\*\ *(&|“)(quot;)?[^&”]+ { 
     removeChar(yytext,'[');
     removeChar(yytext,']');
+    ct++;
     nq++;
     if(yytext[1]==' '){
       fprintf(autor, "<li>%s\"</li>\n",yytext+2);
@@ -101,6 +102,12 @@ int main(int argc, char** argv){
     htmlInit(listautores);
     fprintf(listautores,"<h1>%s</h1>","Lista de Citações");
     yylex();
+
+    //fechar estatisticasautores
+    fprintf(estatsAutores,"<hr/><li><b>Numero de autores:</b> %d </li>",c);
+    fprintf(estatsAutores,"<li><b>Numero total de quotes:</b> %d </li>",ct);
+    htmlClose(estatsAutores);
+    fclose(estatsAutores); 
 
     //fechar autores
     htmlClose(autores);
