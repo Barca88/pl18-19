@@ -24,3 +24,5 @@ clean:
 run: 
 	./program1 ptwikiquote-20190301-pages-articles.xml index.html | ./program2 ptwikiquote-20190301-pages-articles.xml  
 	
+power:
+	make clean && make && make run
