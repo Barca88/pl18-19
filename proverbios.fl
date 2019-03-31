@@ -54,12 +54,12 @@
     removeChar(yytext,'[');
     removeChar(yytext,']');
     np++;
-    fprintf(proverbio, "<li>%s\"</li>\n",yytext+2);
-    fprintf(listproverbios, "<hr/><li>%s\"</li>\n",yytext+2);
+    fprintf(proverbio, "<li>\"%s\"</li>\n",yytext+14);
+    fprintf(listproverbios, "<hr/><li>\"%s\"</li>\n",yytext+14);
     fprintf(listproverbios, "<a>de: %s</a>\n", title);
 }
 
-<PROV>\*\*?\ ?"&quot;"[^&]+ {
+<PROV>\*(\*\*)?\ ?"&quot;"[^&]+ {
     removeChar(yytext,'[');
     removeChar(yytext,']');
     if(yytext[1]=='*'){
