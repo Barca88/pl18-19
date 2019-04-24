@@ -1,0 +1,127 @@
+
+%option noyywrap
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+FILE* autores;
+FILE* listautores;
+FILE* estatsAutores;
+FILE* autor;
+
+int c = 0, ct = 0, nq = 0;
+char filename[1024];
+char* title;
+char* arrow = "&#8608";
+
+void htmlQuote(FILE *f,char *p,char *t);
+void htmlInit(FILE *f);
+void htmlClose(FILE *f);
+void removeChar(char *str, char garbage);
+%}
+
+
+%x AUTOR 
+nome "<title>"[^<]+
+%% 
+                         
+{nome} { 
+    title = strdup(yytext+7);
+}
+
+"{{Autor" { 
+    BEGIN AUTOR;
+    sprintf(filename, "data/autores/autor%d.html", c++);
+    fprintf(autores,"<a href=\"%s\" class=\"list-group-item list-group-item-action\"> %s %s</a>\n",filename+5,arrow,title);
+    autor = fopen(filename,"w");
+    htmlInit(autor);
+    fprintf(autor, "<h1>%s</h1>\n",title);
+
+    fprintf(estatsAutores,"<h3>%s</h3>",title);
+    nq = 0;
+}
+
+<AUTOR>\*\ *(&|“)(quot;)?[^&”]+ { 
+    removeChar(yytext,'[');
+    removeChar(yytext,']');
+    ct++;
+    nq++;
+    if(yytext[1]==' '){
+      fprintf(autor, "<li> %s %s\"</li>\n",arrow,yytext+2);
+      htmlQuote(listautores,yytext+2,title);
+    }else{
+      fprintf(autor, "<li> %s %s\"</li>\n",arrow,yytext+1);
+      htmlQuote(listautores,yytext+1,title);
+    }
+}     
+
+<AUTOR>\<\/page\>  {
+    fprintf(estatsAutores,"<li>Quotes de %s: %d\n</li>",title,nq);
+    htmlClose(autor);
+    fclose(autor);
+    BEGIN INITIAL;
+}
+
+<*>.|\n {;}
+
+         
+%%
+
+void htmlQuote(FILE *f,char *p,char *t){
+    fprintf(f,"<a class=\"list-group-item list-group-item-action\"> %s %s\" <br /> de: %s</a>\n",arrow,p,t);
+}
+void htmlInit(FILE *f){
+   fprintf(f, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/>\n\t\t<link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\">\n\t</head>\n\t<body>\n\t\t<ul class=\"list-group\">\n");
+}
+void htmlClose(FILE *f){
+    fprintf(f, "\t\t\n</ul>\n\t</body>\n</html>");
+}
+
+void removeChar(char *str, char garbage) {
+
+    char *src, *dst;
+    for (src = dst = str; *src != '\0'; src++) {
+        *dst = *src;
+        if (*dst != garbage) dst++;
+    }
+    *dst = '\0';
+}
+
+int main(int argc, char** argv){
+    if(argc <= 1) return 0;
+	yyin = fopen(argv[1], "r");
+    
+    //abrir autor.html
+    autores = fopen("data/autores.html","w");
+    htmlInit(autores);
+    fprintf(autores,"<h1>%s</h1>\n","Autores");
+
+    //abrir estatisticasautores.html
+    estatsAutores = fopen("data/estatisticas/estatisticasautores.html","w");
+    htmlInit(estatsAutores);
+    fprintf(estatsAutores,"<h1>%s</h1>\n","Estatísticas de Autores");
+
+    //abrir listautor.html
+    listautores = fopen("data/listautores.html","w");
+    htmlInit(listautores);
+    fprintf(listautores,"<h1>%s</h1>\n","Lista de Citações");
+    yylex();
+
+    //fechar estatisticasautores
+    fprintf(estatsAutores,"<hr/><li><b>Numero de autores:</b> %d </li>",c);
+    fprintf(estatsAutores,"<li><b>Numero total de quotes:</b> %d </li>",ct);
+    htmlClose(estatsAutores);
+    fclose(estatsAutores); 
+
+    //fechar autores
+    htmlClose(autores);
+    fclose(autores);
+
+    //fechar listautores
+    htmlClose(listautores);
+    fclose(listautores);
+
+
+    return 0;
+}

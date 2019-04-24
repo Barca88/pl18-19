@@ -1,0 +1,24 @@
+#!/usr/bin/gawk -f
+
+BEGIN {
+	FS="\t"
+}
+NF>5 {
+	if($5 =="V") { 
+		if(!verbos[$4]){
+			verbos[$4] = 1;
+		} else {
+			verbos[$4]++;
+		}
+	}
+	if(!dicionario[$1]) {
+		dicionario[$1] = $4 ", " $5
+	}
+}
+
+END { 
+	print "END\n"
+	for(k in verbos){ print k " : " verbos[k]}
+	for(k in dicionario){ print k " : " dicionario[k]}
+}
+
