@@ -43,15 +43,35 @@ NF>5 {
 }
 
 END { 
-	print "Verbos\n"
-	for(k in verbos){ print k " : " verbos[k]}
-	print "Dicionario\n"
-	for(k in dicionario){ print k " : " dicionario[k]}
-	print "MWE\n"
-	for(k in mweList){ print k " : " mweList[k]}
-	print "P's:\n\t" p
-	print "S's:\n\t" s
-	print "Ext's:\n\t" ext
+	#Indice
+	print indice() > "indice.html"
+	#Estatísticas a)
+	print begin() > "data/stats.html"
+	print title("Estatísticas") > "data/stats.html"
+	print "<li>Parágrafos: " p "</li>\n" > "data/stats.html"
+	print "<li>Frases: " s "</li>\n" > "data/stats.html"
+	print "<li>Extratos: " ext "</li>\n" > "data/stats.html"
+	print end() > "data/stats.html"
+	#MWE b)
+	print begin() > "data/mwe.html"
+	print title("Multi-word-expressions") > "data/mwe.html"
+	for(k in mweList){
+		print "<li>" k " : " mweList[k] "</li>" > "data/mwe.html"
+	}
+	print end() > "data/mwe.html"
+	#Verbos c)
+	print begin() > "data/verbos.html"
+	print title("Verbos") > "data/verbos.html"
+	for(k in verbos){ 
+		print "<li>" k " : " verbos[k] "</li>" > "data/verbos.html"
+	}
+	print end() > "data/verbos.html"
+	#Dicionario d)
+	print title("Dicionário") > "data/dicionario.html"
+	print begin() > "data/dicionario.html"
+	for(k in dicionario){ 
+		print "<li>" k ": " dicionario[k] "</li>" > "data/dicionario.html"
+	}
 	
 }
 function first(s){
@@ -60,4 +80,19 @@ function first(s){
 }
 function concat(a,b){
 	return a " " b
+}
+function link(u,t){
+        return  "<li><a href='" u "'>" t "</a></li>\n"
+}
+function title(u){
+        return "<h1>" u "</h1>\n"
+}
+function begin(){
+        return "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/></head>\n\t<body>\n\t\t<ul>\n<link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\">"
+}
+function end(){
+        return "\n\t\t</ul>\n\t</body>\n</html>"
+}
+function indice(){
+	return begin() "\n" title("Indíce") link("data/stats.html","Estatísticas") link("data/mwe.html","Multi-word-expressions") link("data/verbos.html","Lista de Verbos") link("data/dicionario.html","Dicionário") end()
 }
