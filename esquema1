@@ -1,7 +1,29 @@
 #!/usr/bin/gawk -f
 
 BEGIN {
-	FS="\t"
+	FS = "\t"
+	mweF = 0
+	p = 0
+	f = 0
+	ext = 0
+}
+NF==1{
+	aux = first($0)
+	if(aux == "<mwe" || aux == "<mwe>"){
+		mweF = 1
+		mweW = ""
+	}
+	if(aux == "<p" || aux == "<p>") p++
+	if(aux == "<s>") s++
+	if(aux == "<ext" || aux == "<ext>") ext++
+	if(aux == "</mwe>"){
+		mweF = 0;
+		if(!mweList[mweW]){
+			mweList[mweW] = 0;
+		} else {
+			mweList[mweW]++;
+		}
+	}
 }
 NF>5 {
 	if($5 =="V") { 
@@ -14,11 +36,29 @@ NF>5 {
 	if(!dicionario[$1]) {
 		dicionario[$1] = $4 ", " $5
 	}
+	if(mweF == 1){
+
+		mweW = concat(mweW,$1)
+	}
 }
 
 END { 
-	print "END\n"
+	print "Verbos\n"
 	for(k in verbos){ print k " : " verbos[k]}
+	print "Dicionario\n"
 	for(k in dicionario){ print k " : " dicionario[k]}
+	print "MWE\n"
+	for(k in mweList){ print k " : " mweList[k]}
+	print "P's:\n\t" p
+	print "F's:\n\t" f
+	print "Ext's:\n\t" ext
+	
 }
-
+#####
+function first(s){
+	split(s,a," ",b)
+	return a[1]
+}
+function concat(a,b){
+	return a " " b
+}
