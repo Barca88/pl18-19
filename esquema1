@@ -4,10 +4,10 @@ BEGIN {
 	FS = "\t"
 	mweF = 0
 	p = 0
-	f = 0
+	s = 0
 	ext = 0
 }
-NF==1{
+NF<5{
 	aux = first($0)
 	if(aux == "<mwe" || aux == "<mwe>"){
 		mweF = 1
@@ -19,7 +19,7 @@ NF==1{
 	if(aux == "</mwe>"){
 		mweF = 0;
 		if(!mweList[mweW]){
-			mweList[mweW] = 0;
+			mweList[mweW] = 1;
 		} else {
 			mweList[mweW]++;
 		}
@@ -50,11 +50,10 @@ END {
 	print "MWE\n"
 	for(k in mweList){ print k " : " mweList[k]}
 	print "P's:\n\t" p
-	print "F's:\n\t" f
+	print "S's:\n\t" s
 	print "Ext's:\n\t" ext
 	
 }
-#####
 function first(s){
 	split(s,a," ",b)
 	return a[1]
