@@ -72,7 +72,6 @@ END {
 	for(k in dicionario){ 
 		if(dicionario[k] != "") print "<li>" k ": " dicionario[k] "</li>" > "data/dicionario.html"
 	}
-	
 }
 function first(s){
 	split(s,a," ",b)
