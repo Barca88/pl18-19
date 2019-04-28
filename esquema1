@@ -33,8 +33,8 @@ NF>5 {
 			verbos[$4]++;
 		}
 	}
-	if(!dicionario[$1]) {
-		dicionario[$1] = $4 ", " $5
+	if($5 != "" && !dicionario[$1] && $5 != "PU" && $5 != "NUM_card") {
+		dicionario[$1] = $4 ", " $5 "."
 	}
 	if(mweF == 1){
 
@@ -70,7 +70,7 @@ END {
 	print title("Dicionário") > "data/dicionario.html"
 	print begin() > "data/dicionario.html"
 	for(k in dicionario){ 
-		print "<li>" k ": " dicionario[k] "</li>" > "data/dicionario.html"
+		if(dicionario[k] != "") print "<li>" k ": " dicionario[k] "</li>" > "data/dicionario.html"
 	}
 	
 }
