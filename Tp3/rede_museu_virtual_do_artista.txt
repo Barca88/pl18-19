@@ -1,0 +1,12 @@
+artista<
+    nome<Quim Barreiros;>
+    obra<Cabritinha;Garagem da vizinha;>
+    evento<EnterroDeLaGatita2k19;>
+    ensinou<Saul;>
+>
+artista<
+    nome<Rebeca;>
+    obra<O meu nome é rebeca;A moda do pisca pisca;>
+    evento<Portugal em festa;Goucha;>
+    colaborou<Rute Marlene;>
+>
