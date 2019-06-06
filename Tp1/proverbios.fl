@@ -66,7 +66,7 @@
     if(yytext[1]=='*'){
         tpa++;
         npa++;
-        fprintf(proverbio, "<li> %s %s</li>\n",arrow,yytext+3);
+        fprintf(proverbio, "<li> %s %s %s</li>\n",arrow,arrow,yytext+3);
     }else if(yytext[1]!=' '){
         tp++;
         np++;

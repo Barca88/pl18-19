@@ -7,13 +7,14 @@ BEGIN {
 	s = 0
 	ext = 0
 }
+/<p/{p++;next}
 NF<5{
 	aux = first($0)
 	if(aux == "<mwe" || aux == "<mwe>"){
 		mweF = 1
 		mweW = ""
 	}
-	if(aux == "<p" || aux == "<p>") p++
+	#if(aux == "<p" || aux == "<p>") p++
 	if(aux == "<s>") s++
 	if(aux == "<ext" || aux == "<ext>") ext++
 	if(aux == "</mwe>"){
