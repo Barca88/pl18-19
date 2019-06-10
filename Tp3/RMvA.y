@@ -1,58 +1,84 @@
 %{
 
+#define _GNU_SOURCE 
+#include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
+
+int yyerror (char *s);
+int yylex();
+int yywrap();
+int yyparse();
+
+char* nodo;
 
 %}
 
-/*jj*/
+/*jj prh*/
+
+%union { char* str; }
+
 %token artista
 %token nome
-%token obra
-%token evento
-%token ensinados
-%token elemento
+%token obras
+%token eventos
+%token ensino
+%token colaboracao
+%token <str> string
+%type <str> Artistas Artista Identidade Nome Obras Eventos Relacoes Ensino Colaboracao Elementos
 
-
-%%
 /* operands */
-%token <string> RMvA Artistas Artista Nome Obras Obra Eventos Evento Elementos Elemento
-
-
 %%
 
-RMvA: Artistas
+RMvA: Artistas {printf("%s\n",$1);}
     ;
 
-Artistas: Artista;
-        | Artistas Artista
+Artistas: Artista {$$ = $1;}
+        | Artistas Artista {asprintf(&$$,"%s\n%s",$1,$2);}
         ;
 
-Artista: artista '<' Nome Obras Eventos Ensinados '>'
+Artista: artista '{' Identidade '}' {$$ = $3;}
        ;
 
-Nome: nome '<' Elementos '>'
+Identidade: Nome {asprintf(&$$,"%s",$1); nodo = strdup($1);}
+          | Nome Obras {asprintf(&$$,"%s -> %s",$1,$2);}
+          | Nome Obras Eventos {asprintf(&$$,"%s -> %s\n%s -> %s", $1, $2, $1, $3);}
+          | Nome Obras Eventos Relacoes {asprintf(&$$,"%s -> %s\n%s -> %s\n%s -> %s", $1, $2,$1, $3, $1, $4);}
+          ;
+
+Nome: nome '{' Elementos '}' {$$ = $3;}
     ;
 
-Obras: Obra;
-     | Obras Obra
+Obras: obras '{' Elementos '}' {$$ = $3;}
      ;
 
-Obra: obra '<' Elementos '>';
-    ;
-
-Eventos: Evento
-       | Eventos Evento;
+Eventos: eventos '{' Elementos '}' {$$ = $3;}
        ;
 
-Evento: evento '<' Elementos '>';
-      ;
-
-Elementos: Elemento;
-         | Elementos Elemento
-         ;   
-
-Elemento: elemento ';'
+Relacoes: Ensino {$$ = $1;}
+        | Colaboracao {$$ = $1;}
         ;
 
+Ensino: ensino '{' Elementos '}' {$$ = $3;}
+      ;
+
+Colaboracao: colaboracao '{' Elementos'}' {$$ = $3;}
+           ;
+
+Elementos: string ';' {asprintf(&$$,"\"%s\"",$1);}
+         | Elementos string ';' {asprintf(&$$,"%s -> \"%s\"",$1,$2);}
+         ;
+
 %%
+
+#include "lex.yy.c"
+
+int yyerror (char *s) {
+   fprintf (stderr, "%s\n",s);
+}
+
+int main(){
+       printf("digraph g{\n\tratio = fill;\n\tnode [style=filled];\n");
+       yyparse();
+       printf("}\n");
+       return 0;
+}

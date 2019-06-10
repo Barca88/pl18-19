@@ -1,24 +1,24 @@
 %{
 
 #include "y.tab.h"
-#include "lex.yy.c"
 #include <stdio.h>
+#include <ctype.h>
 
 %}
 
-SPACE " "*
-%option noyywrap
 %%
+
+
+\s* {;}
 artista         { return artista; }
 nome            { return nome; }
-obra            { return obra; }
-evento          { return evento; }
-ensinou         { return ensinados; }
-[a-zA-Z0-9]     { return elemento; }
+obras           { return obras; }
+eventos         { return eventos; }
+ensinou         { return ensino; }
+colaborou       { return colaboracao; }
+[A-Za-z0-9]+    { yylval.str = strdup(yytext); return string; }
+[{};]           { return yytext[0]; }
+.|\n            { ;}
 
-
-[=+/*()\-;%:<>] { return yytext[0]; }
-[0-9]+        { return NUM; }
-
-
-
+%%
+int yywrap() {return 1;}

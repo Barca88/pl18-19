@@ -1,12 +1,40 @@
-artista<
-    nome<Quim Barreiros;>
-    obra<Cabritinha;Garagem da vizinha;>
-    evento<EnterroDeLaGatita2k19;>
-    ensinou<Saul;>
->
-artista<
-    nome<Rebeca;>
-    obra<O meu nome é rebeca;A moda do pisca pisca;>
-    evento<Portugal em festa;Goucha;>
-    colaborou<Rute Marlene;>
->
+artista{
+    nome{Gson;}
+}
+
+artista{
+    nome{Piruka;}
+    obras{
+            CaBuFlaMaNau;
+            SeEuNaoAcordarAmanha;
+            AClara;
+        }
+}
+
+artista{
+    nome{SlowJ;}
+    obras{
+            TeuIternamente;
+            Comida;
+        }
+    eventos{
+            MaisUmasQueimas;
+            E;
+            Outra;
+            Ou;
+            Mais;
+            Uma;}
+}
+
+artista{
+    nome{Papillon;}
+    obras{
+            Iminente;
+            Impec;
+        }
+    eventos{
+            UmaQueimaQualquer;
+            OutraQueimaQualquer;
+        }
+    colaborou{SlowJ;}
+}
