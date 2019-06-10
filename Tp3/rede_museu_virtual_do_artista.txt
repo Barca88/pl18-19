@@ -23,7 +23,8 @@ artista{
             Outra;
             Ou;
             Mais;
-            Uma;}
+            Uma;
+        }
 }
 
 artista{
