@@ -39,10 +39,10 @@ Artistas: Artista {$$ = $1;}
 Artista: artista '{' Identidade '}' {$$ = $3;}
        ;
 
-Identidade: Nome {asprintf(&$$,"%s",$1); nodo = strdup($1);}
-          | Nome Obras {asprintf(&$$,"%s -> %s",$1,$2);}
-          | Nome Obras Eventos {asprintf(&$$,"%s -> %s\n%s -> %s", $1, $2, $1, $3);}
-          | Nome Obras Eventos Relacoes {asprintf(&$$,"%s -> %s\n%s -> %s\n%s -> %s", $1, $2,$1, $3, $1, $4);}
+Identidade: Nome {asprintf(&$$,"\t%s [shape = doublecircle ];\n",$1); nodo = strdup($1);}
+          | Nome Obras {printf("\t%s [shape = doublecircle ];\n",$1);asprintf(&$$,"\t%s -> %s [ label = \"obra\", color=\"0.002 0.999 0.999\"];",$1,$2);}
+          | Nome Obras Eventos {printf("\t%s [shape = doublecircle ];\n",$1);asprintf(&$$,"\t%s -> %s [ label = \"obra\", color=\"0.002 0.999 0.999\"];\n\t%s -> %s [ label = \"evento\", color=\"0.348 0.839 0.839\" ];", $1, $2, $1, $3);}
+          | Nome Obras Eventos Relacoes {printf("\t%s [shape = doublecircle ];\n",$1);asprintf(&$$,"\t%s -> %s [ label = \"obra\", color=\"0.002 0.999 0.999\"];\n\t%s -> %s [ label = \"evento\", color=\"0.348 0.839 0.839\" ];\n\t%s -> %s [ label = \"Relacao\" ];", $1, $2,$1, $3, $1, $4);}
           ;
 
 Nome: nome '{' Elementos '}' {$$ = $3;}
