@@ -15,8 +15,6 @@ FILE* fp;
 
 %}
 
-/*jj prh*/
-
 %union { char* str; }
 
 %token artista
@@ -78,8 +76,10 @@ Obra: obra '{' Nome  '}' { $$ = $3; }
 Eventos: eventos '{' Elementos '}' { $$ = $3; }
        ;
 
-Relacoes: Ensino { $$ = $1; }
-        | Colaboracao { $$ = $1; }
+Relacoes: Ensino {$$ = $1;}
+        | Colaboracao {$$ = $1;}
+        | Ensino Colaboracao {$$ = $1;}
+        | Colaboracao Ensino {$$ = $1;}
         ;
 
 Ensino: ensino '{' Elementos '}' { $$ = $3; }
