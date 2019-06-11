@@ -8,15 +8,14 @@
 
 %%
 
-
-\t              { ; }
 artista         { return artista; }
-nome            { return nome; }
-obras           { return obras; }
+nome            { return nome;    }
+obras           { return obras;   }
+obra            { return obra;   }
 eventos         { return eventos; }
-ensinou         { return ensino; }
+ensinou         { return ensino;  }
 colaborou       { return colaboracao; }
-[A-Za-z0-9]+   { yylval.str = strdup(yytext); return string; }
+[A-Za-z0-9 ]+   { yylval.str = strdup(yytext); return string; }
 [{};]           { return yytext[0]; }
 .|\n            { ; }
 
