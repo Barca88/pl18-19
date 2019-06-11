@@ -13,8 +13,6 @@ char* nodo;
 
 %}
 
-/*jj prh*/
-
 %union { char* str; }
 
 %token artista
