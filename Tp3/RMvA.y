@@ -41,22 +41,22 @@ Artista: artista '{' Identidade '}' { $$ = $3; }
        ;
 
 Identidade: Nome { 
-                     asprintf(&$$,"\t%s [shape = doublecircle, href=\"file:///home/canel/Code18_19/2/PLl/Project/pl18-19/Tp3/HTML/%s.html\" ];",$1,$1);
+                     asprintf(&$$,"\t%s [shape = doublecircle, href=\"file:///home/barca/Projects/pl18-19/Tp3/HTML/%s.html\" ];",$1,$1);
                      sprintf(filename,"HTML/%s.html",$1); 
                      fp = fopen(filename, "w");
                      fprintf(fp,"<h1>%s</h1>",$1);
                      nodo = strdup($1);}
-          | Nome Obras { printf("\t%s [shape = doublecircle, href=\"file:///home/canel/Code18_19/2/PLl/Project/pl18-19/Tp3/HTML/%s.html\"  ];\n",$1,$1);
+          | Nome Obras { printf("\t%s [shape = doublecircle, href=\"file:///home/barca/Projects/pl18-19/Tp3/HTML/%s.html\"  ];\n",$1,$1);
                      sprintf(filename,"HTML/%s.html",$1);
                      fp = fopen(filename, "w");
                      fprintf(fp,"<h1>%s</h1>",$1);
                      asprintf(&$$,"\t%s -> %s [ label = \"Produziu\", color=\"0.002 0.999 0.999\"];",$1,$2);}
-          | Nome Obras Eventos { printf("\t%s [shape = doublecircle, href=\"file:///home/canel/Code18_19/2/PLl/Project/pl18-19/Tp3/HTML/%s.html\"  ];\n",$1,$1);
+          | Nome Obras Eventos { printf("\t%s [shape = doublecircle, href=\"file:///home/barca/Projects/pl18-19/Tp3/HTML/%s.html\"  ];\n",$1,$1);
                      sprintf(filename,"HTML/%s.html",$1);
                      fp = fopen(filename, "w");
                      fprintf(fp,"<h1>%s</h1>",$1);
                      asprintf(&$$,"\t%s -> %s [ label = \"Produziu\", color=\"0.002 0.999 0.999\"];\n\t%s -> %s [ label = \"Participou\", color=\"0.348 0.839 0.839\" ];", $1, $2, $1, $3);}
-          | Nome Obras Eventos Relacoes { printf("\t%s [shape = doublecircle, href=\"file:///home/canel/Code18_19/2/PLl/Project/pl18-19/Tp3/HTML/%s.html\"  ];\n",$1,$1);
+          | Nome Obras Eventos Relacoes { printf("\t%s [shape = doublecircle, href=\"file:///home/barca/Projects/pl18-19/Tp3/HTML/%s.html\"  ];\n",$1,$1);
                      sprintf(filename,"HTML/%s.html",$1);
                      fp = fopen(filename, "w");
                      fprintf(fp,"<h1>%s</h1>",$1);

@@ -5,6 +5,7 @@ GCC := y.tab.c
 
 
 all:
+	mkdir HTML
 	yacc -v -d $(YACC)
 	flex $(FLEX)
 	gcc -o $(CONV) $(GCC)
@@ -13,6 +14,7 @@ run:
 	./RMvA < rede_museu_virtual_do_artista.txt
 
 clean:
+	rm -rf HTML/
 	rm -f $(CONV)
 	rm -f $(GCC)
 	rm -f lex.yy.c
