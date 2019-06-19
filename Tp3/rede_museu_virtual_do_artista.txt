@@ -1,4 +1,4 @@
 artista{nome{Gson;}}
-artista{nome{Piruka;}obras{obra{nome{Ca Bu Fla Ma Nau;}}obra{nome{Salto Alto;}}obra{nome{Sirenes;}}}}
-artista{nome{SlowJ;}obras{obra{nome{Comida;}}}eventos{Mais Umas Queimas;E;Outra;Ou;Mais;Uma;}}
+artista{nome{Piruka;}obras{obra{nome{CaBuFlaMaNau;}}obra{nome{SaltoAlto;}}obra{nome{Sirenes;}}}}
+artista{nome{SlowJ;}obras{obra{nome{Comida;}}}eventos{MaisUmasQueimas;E;Outra;Ou;Mais;Uma;}}
 artista{nome{Papillon;}obras{obra{nome{Iminente;}}obra{nome{Impec;}}}eventos{UmaQueimaQualquer;OutraQueimaQualquer;}colaborou{SlowJ;}}

@@ -11,9 +11,12 @@ all:
 	gcc -o $(CONV) $(GCC)
 
 run:
-	./RMvA < rede_museu_virtual_do_artista.txt
+	./RMvA < rede_museu_virtual_do_artista.txt > file.dot
+	dot -Tsvg file.dot -o index.svg
 
 clean:
+	rm -f file.dot
+	rm -f index.svg
 	rm -rf HTML/
 	rm -f $(CONV)
 	rm -f $(GCC)
@@ -21,3 +24,7 @@ clean:
 	rm -f y.output
 	rm -f y.tab.h
 	
+power: 
+	make clean
+	make all
+	make run
