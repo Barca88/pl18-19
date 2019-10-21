@@ -1,0 +1,124 @@
+ 
+
+%option noyywrap
+%{
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+
+  //FILE* idx;
+  FILE* autores;
+  FILE* autor;
+  FILE* proverbios;
+  FILE* proverbio;
+
+  int c;
+  char filename[1024];
+  char* title;
+  char* quot;
+  char* prov;
+  char* prquot;
+  int n = 0,p = 0;
+
+%}
+
+%x AUTOR PROV
+nome "<title>"[^<]+
+prov "<title>Provérbios"[^<]+
+%% 
+
+{nome}  { 
+        title = strdup(yytext+7);
+        }
+"{{Autor"  { 
+           BEGIN AUTOR;
+           sprintf(filename, "data/autores/autor%d.html", n++);
+           fprintf(autores,"<a href=\"%s\">%s</a>\n",filename+5,title);
+
+           autor = fopen(filename,"w");
+           fprintf(autor, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/>\n\t</head>\n\t<body>\n");
+           fprintf(autor, "<h1>%s</h1>\n",title);
+           }
+
+<AUTOR>\*\s*"&quot;".+/"&quot;"   { 
+                                  fprintf(autor, "<li>%s</li>\n",yytext+7);
+                                  }
+<AUTOR>\<\/page\>  {
+                    fprintf(autor, "\n\t</body>\n</html>");
+                    fprintf(autores,"<hr/>");
+                    fclose(autor);
+                    BEGIN INITIAL;
+                    }
+
+{prov}  { 
+        BEGIN PROV;
+        prov = strdup(yytext+7);
+        sprintf(filename, "data/proverbios/proverbio%d.html", p++);
+        fprintf(proverbios,"<a href=\"%s\">%s</a>\n",filename+5,title);
+
+        proverbio = fopen(filename,"w");
+        fprintf(proverbio, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/></head>\n\t<body>\n");
+        fprintf(proverbio, "<h1>%s</h1>\n",title);
+        }
+           
+<PROV>\<\/page\>  {
+                    fprintf(autor, "\n\t</body>\n</html>");
+                    fprintf(autores,"<hr/>");
+                    fclose(autor);
+                    BEGIN INITIAL;
+                    }             
+<*>.|\n {;}
+
+         
+%%
+
+  void htmlInit(FILE *f){
+      fprintf(f, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/>\n\t</head>\n\t<body>\n");
+  }
+
+  void htmlClose(FILE *f){
+      fprintf(f, "\n\t</body>\n</html>");
+  }
+
+  void makeIndex(FILE* f){
+      htmlInit(f);
+      char* b = "\t\t";
+      fprintf(f,"%s<h1>Indíce</h1>\n",b);
+      fprintf(f,"%s<ul>\n",b);
+      char* items[4] = {"Citações por autor","Provérbios","Provérbios adulterados","Estatísticas"};
+      fprintf(f,"%s<li><a href='data/citações.html'>%s</a></li>\n",b,items[0]);
+      fprintf(f,"%s<li><a href='data/provérbios.html'>%s</a></li>\n",b,items[1]);
+      fprintf(f,"%s<li><a href='data/adulterados.html'>%s</a></li>\n",b,items[2]);
+      fprintf(f,"%s<li><a href='data/estatísticas.html'>%s</a></li>\n",b,items[3]);
+      fprintf(f,"%s</ul>",b);
+      htmlClose(f);
+  }
+
+int main(int argc, char** argv){
+    FILE* ind = fopen("index.html","w");
+    FILE* yyin;
+    FILE* autores;
+    FILE* proverbios;
+
+    makeIndex(ind);
+    fclose(ind);
+
+    if(argc > 1){
+      
+    	yyin = fopen(argv[1], "r");
+      autores = fopen("data/citações.html","w");
+      proverbios = fopen("data/provérbios.html","w");
+
+    } else { return 1;}
+    
+    htmlInit(autores);
+    htmlInit(proverbios);
+    yylex();
+    htmlClose(autores);
+    htmlInit(proverbios);
+
+
+    fclose(autores);
+    fclose(proverbios);
+    return 0;
+}
