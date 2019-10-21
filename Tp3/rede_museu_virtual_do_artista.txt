@@ -1,4 +1,64 @@
-artista{nome{Gson;}}
-artista{nome{Piruka;}obras{obra{nome{CaBuFlaMaNau;}}obra{nome{SaltoAlto;}}obra{nome{Sirenes;}}}}
+artista{
+	nome{Gson;}
+	obras{
+        obra{nome{Voar;}}
+        obra{nome{NaoTensVisto;}}
+    }
+    eventos{
+        PremiosdaMusicaPortuguesa;
+        MEOsudoeste;
+    }
+}
+artista{
+    nome{Kroa;}
+    obras{
+        obra{nome{HotBoyz;}}
+    }
+    eventos{
+        PremiosdaMusicaPortuguesa;
+        MEOsudoeste;
+    }
+}
+artista{
+	nome{ZaraG;}
+	obras{
+		obra{nome{Chamine;}}
+		obra{nome{NaoTensVisto;}}
+	}
+	eventos{
+		PremiosdaMusicaPortuguesa;
+		MEOsudoeste;
+		Grammy;
+	}
+}
+artista{
+    nome{ZizyJr;}
+    obras{
+        obra{nome{Grillz;}}
+    }
+    eventos{
+        PremiosdaMusicaPortuguesa;
+        MEOsudoeste;
+    }
+}
+artista{
+nome{Piruka;}
+obras{
+obra{nome{CaBuFlaMaNau;}}obra{nome{SaltoAlto;}}obra{nome{Sirenes;}}}}
 artista{nome{SlowJ;}obras{obra{nome{Comida;}}}eventos{MaisUmasQueimas;E;Outra;Ou;Mais;Uma;}}
 artista{nome{Papillon;}obras{obra{nome{Iminente;}}obra{nome{Impec;}}}eventos{UmaQueimaQualquer;OutraQueimaQualquer;}colaborou{SlowJ;}}
+artista{
+	nome{JoaoTordo;}
+	obras{
+		obra{nome{DiarodaCeleste;}}
+		obra{nome{OFuneraldeEliasGrou;}}
+	}
+	eventos{
+		PremioJoseSaramago;
+		Camoes;
+	}
+	colaborou{
+		ZaraG:
+		Piruka
+	}
+}
