@@ -1,0 +1,187 @@
+
+%option noyywrap
+%{
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+
+  FILE* idx;
+
+  FILE* proverbios;
+  FILE* estatisticas;
+  FILE* estatsProvs;
+  FILE* listproverbios;
+  FILE* proverbio;
+
+  int p = 0, n = 0, np,npa,tp = 0,tpa = 0;
+  char filename[1024];
+  char* title;
+  char* arrow = "&#8608";
+
+  void htmlQuote(FILE *f,char *p,char *t);
+  void htmlInit(FILE *f);
+  void htmlClose(FILE *f);
+  void removeChar(char *str, char garbage);
+%}
+
+
+%x PROV
+
+%% 
+                         
+"<title>Provérbios"[^<]+ {
+    BEGIN PROV;
+    title = strdup(yytext+7);
+    sprintf(filename, "data/proverbios/proverbios%d.html", p++);
+    fprintf(proverbios,"<a href=\"%s\" class=\"list-group-item list-group-item-action\"> %s %s</a>\n",filename+5,arrow,title);
+    fprintf(estatsProvs,"<h3>%s</h3>\n",title);
+    npa = 0;
+    np = 0;
+    proverbio = fopen(filename,"w");
+    htmlInit(proverbio);
+    fprintf(proverbio,"<h1>%s</h1>",title);
+}
+
+<PROV>\*\*\ Tradu\ç\ão\:\ "&quot;"[^&]+ {
+    removeChar(yytext,'[');
+    removeChar(yytext,']');
+    tp++;
+    np++;
+    fprintf(proverbio, "<li> %s %s</li>\n",arrow,yytext+15);
+    htmlQuote(listproverbios,yytext+15,title);
+}
+
+<PROV>\:\ Tradu\ç\ão\:[^.]+ {
+    removeChar(yytext,'[');
+    removeChar(yytext,']');
+    tp++;
+    np++;
+    fprintf(proverbio, "<li> %s %s</li>\n",arrow,yytext+14);
+    htmlQuote(listproverbios,yytext+14,title);
+}
+
+<PROV>\*(\*\*)?\ ?"&quot;"[^&]+ {
+    removeChar(yytext,'[');
+    removeChar(yytext,']');
+    if(yytext[1]=='*'){
+        tpa++;
+        npa++;
+        fprintf(proverbio, "<li> %s %s %s</li>\n",arrow,arrow,yytext+3);
+    }else if(yytext[1]!=' '){
+        tp++;
+        np++;
+        fprintf(proverbio, "<li> %s %s</li>\n",arrow,yytext+1);
+        htmlQuote(listproverbios,yytext+1,title);
+    }else{
+        tp++;
+        np++;
+        fprintf(proverbio, "<li> %s %s</li>\n",arrow,yytext+2);
+        htmlQuote(listproverbios,yytext+2,title);
+    }
+}
+
+<PROV>\*\ \''[^\'']+ {
+    removeChar(yytext,'[');
+    removeChar(yytext,']');
+    np++;
+    fprintf(proverbio, "<li> %s %s</li>\n",arrow,yytext+4);
+    htmlQuote(listproverbios,yytext+4,title);
+} 
+
+<PROV>\<\/page\> {
+    fprintf(estatsProvs,"<li>Numero de %s: %d\n</li>",title,np);
+    fprintf(estatsProvs,"<li>Numero de %s adulterados: %d\n</li>",title,npa);
+    htmlClose(proverbio);
+    fclose(proverbio); BEGIN INITIAL;
+}
+
+<*>.|\n {;}
+         
+%%
+void htmlQuote(FILE *f,char *p,char *t){
+    fprintf(f,"<a class=\"list-group-item list-group-item-action\"> %s %s\" <br /> de: %s</a>\n",arrow,p,t);
+}
+void htmlInit(FILE *f){
+   fprintf(f, "<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\"/>\n\t\t<link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\">\n\t</head>\n\t<body>\n\t\t<ul class=\"list-group\">\n");
+}
+void htmlClose(FILE *f){
+    fprintf(f, "\t\t\n</ul>\n\t</body>\n</html>");
+}
+void menuIndex(FILE *f){
+    fprintf(f,"<h1>Indíce</h1>\n");
+    fprintf(f,"<a href=\"%s\" class=\"list-group-item list-group-item-action\"> %s %s</a>\n","data/autores.html",arrow,"Autores");
+    fprintf(f,"<a href=\"%s\" class=\"list-group-item list-group-item-action\"> %s %s</a>\n","data/proverbios.html",arrow,"Provérbios");
+    fprintf(f,"<a href=\"%s\" class=\"list-group-item list-group-item-action\"> %s %s</a>\n","data/listautores.html",arrow,"Lista de Citações");
+    fprintf(f,"<a href=\"%s\" class=\"list-group-item list-group-item-action\"> %s %s</a>\n","data/listproverbios.html",arrow,"Lista de Provérbios");
+    fprintf(f,"<a href=\"%s\" class=\"list-group-item list-group-item-action\"> %s %s</a>\n","data/estatisticas.html",arrow,"Estatisticas");
+}
+
+void removeChar(char *str, char garbage) {
+
+    char *src, *dst;
+    for (src = dst = str; *src != '\0'; src++) {
+        *dst = *src;
+        if (*dst != garbage) dst++;
+    }
+    *dst = '\0';
+}
+
+int main(int argc, char** argv){
+
+    if(argc <= 2) return 0;
+
+	yyin = fopen(argv[1], "r");
+    //abrir index.html
+    idx = fopen(argv[2],"w");
+    htmlInit(idx);
+    menuIndex(idx);
+
+    //abrir proverbios.html
+    proverbios = fopen("data/proverbios.html","w");
+    htmlInit(proverbios);
+    fprintf(proverbios,"<h1>%s</h1>\n","Provérbios");
+
+    //abrir estatisticas.html
+    estatisticas = fopen("data/estatisticas.html","w");
+    htmlInit(estatisticas);
+    fprintf(estatisticas,"<h1>%s</h1>\n","Estatísticas");
+    fprintf(estatisticas,"<a href=\"%s\" class=\"list-group-item list-group-item-action\"> %s %s</a>\n","estatisticas/estatisticasproverbios.html",arrow,"Estatisticas provérbios");
+    fprintf(estatisticas,"<a href=\"%s\" class=\"list-group-item list-group-item-action\"> %s %s</a>\n","estatisticas/estatisticasautores.html",arrow,"Estatisticas autores");
+    
+    //abrir estatisticasproverbios.html
+    estatsProvs = fopen("data/estatisticas/estatisticasproverbios.html","w");
+    htmlInit(estatsProvs);
+    fprintf(estatsProvs,"<h1>%s</h1>\n","Estatísticas dos Provérbios");
+
+    //abrir listproverbios.html
+    listproverbios = fopen("data/listproverbios.html","w");
+    htmlInit(listproverbios);
+    fprintf(listproverbios,"<h1>%s</h1>\n","Lista de Provérbios");
+
+    yylex();
+
+    //fechar index
+    htmlClose(idx);
+    fclose(idx);
+
+    //fechar proverbios
+    htmlClose(proverbios);
+    fclose(proverbios);
+
+    //fechar estatisticas
+    htmlClose(estatisticas);
+    fclose(estatisticas);
+
+    //fechar estatisticasproverbios
+    fprintf(estatsProvs,"<hr/><li><b>Numero de nacionalidades:</b> %d </li>",p);
+    fprintf(estatsProvs,"<li><b>Numero total de proverbios:</b> %d </li>",tp);
+    fprintf(estatsProvs,"<li><b>Numero total de proverbios adulterados:</b> %d </li>",tpa);
+    htmlClose(estatsProvs);
+    fclose(estatsProvs); 
+
+    //fechar listproverbios
+    htmlClose(listproverbios);
+    fclose(listproverbios);
+
+    return 0;
+}
